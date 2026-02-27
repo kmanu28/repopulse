@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme {
+  --color-retro-bg: #0b0f19;
+  /* Softer dark blue/black */
+  --color-retro-panel: #111827;
+  /* Lighter panel for less contrast */
+  --color-retro-border: #6366f1;
+  /* Softer indigo */
+  --color-retro-text: #f1f5f9;
+  /* Softer white */
+  --color-retro-accent: #c084fc;
+  /* Softer purple/pink */
+  --color-retro-glow: rgba(192, 132, 252, 0.2);
+  /* Much subtler glow */
+}
+
+body {
+  margin: 0;
+  width: 800px;
+  height: 600px;
+  background-color: var(--color-retro-bg);
+  color: var(--color-retro-text);
+  overflow: hidden;
+  font-family: 'Courier New', Courier, monospace;
+  /* Retro terminal font */
+}
+
+/* CRT Scanline Effect - Softened */
+.crt::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  z-index: 50;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+  opacity: 0.5;
+  /* Reduce overall intensity */
+}
+
+/* Vintage Window Border - Softened */
+.retro-window {
+  border: 1px solid var(--color-retro-border);
+  box-shadow: 2px 2px 0px rgba(99, 102, 241, 0.3);
+  background-color: var(--color-retro-panel);
+  border-radius: 4px;
+  /* Slight rounding for a more modern-retro mix */
+}
+
+/* Cyber Neon Glow - Softened */
+.neon-text {
+  text-shadow: 0 0 3px var(--color-retro-glow);
+  color: var(--color-retro-accent);
+}
+
+/* Custom scrollbar for webkit */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-retro-bg);
+  border-left: 1px solid var(--color-retro-border);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-retro-border);
+  border: 2px solid var(--color-retro-bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-retro-accent);
+}

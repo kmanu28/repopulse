@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "RepoPulse",
+  "version": "1.0",
+  "description": "AI-powered GitHub README Generator using Gemini 2.5 Flash",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "service_worker": "assets/background.js",
+    "type": "module"
+  },
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://api.github.com/*"
+  ]
+}
