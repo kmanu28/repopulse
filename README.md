@@ -14,14 +14,14 @@
 
 ```mermaid
 graph TD
-    A[User] -- 1. Opens Extension on GitHub Repo --> B(Chrome Extension: Popup UI - App.tsx);
-    B -- 2. "EXEC_GENERATE" Click & Repo URL --> C(Chrome Extension: Background Script - background.ts);
-    C -- 3. Fetch Repository Data (Code, Files, Structure) --> D(GitHub API);
-    D -- 4. Repository Metadata & Content --> C;
-    C -- 5. Generate README Request (with Repo Data & Context) --> E(Gemini AI API);
-    E -- 6. Generated Markdown Content --> C;
-    C -- 7. Send Markdown to Popup --> B;
-    B -- 8. Display, Preview & Action (Copy/Download) --> A;
+    A[User] -->|1. Opens Extension on GitHub Repo| B(Chrome Extension: Popup UI - App.tsx)
+    B -->|2. EXEC_GENERATE Click and Repo URL| C(Chrome Extension: Background Script - background.ts)
+    C -->|3. Fetch Repository Data Code, Files, Structure| D(GitHub API)
+    D -->|4. Repository Metadata and Content| C
+    C -->|5. Generate README Request with Repo Data and Context| E(Gemini AI API)
+    E -->|6. Generated Markdown Content| C
+    C -->|7. Send Markdown to Popup| B
+    B -->|8. Display, Preview and Action Copy/Download| A
 
     subgraph Chrome Extension
         B
