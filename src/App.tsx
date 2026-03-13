@@ -50,6 +50,10 @@ function App() {
         { action: 'GENERATE_README', url },
         (response) => {
           setLoading(false);
+          if (chrome.runtime.lastError) {
+            setError(chrome.runtime.lastError.message || 'Failed to communicate with the extension background script.');
+            return;
+          }
           if (response?.success) {
             setMarkdown(response.data);
             setActiveTab('preview');

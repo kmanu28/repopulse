@@ -11,7 +11,12 @@ export async function fetchFileContent(owner: string, repo: string, path: string
     if (!response.ok) return null;
     const data = await response.json();
     if (data.content) {
-        return atob(data.content); // decoding base64 content
+        try {
+            // safely decode utf-8 from base64
+            return decodeURIComponent(escape(atob(data.content)));
+        } catch (e) {
+            return atob(data.content); // fallback
+        }
     }
     return null;
 }
@@ -35,8 +40,8 @@ export async function getRepoContext(url: string) {
     // Fetch tree
     const treeData = await fetchRepoTree(owner, repo, defaultBranch);
 
-    // Extract key files
-    const files = treeData.tree.map((t: any) => t.path);
+    // Extract key files responsibly, handling potential API issues
+    const files = treeData.tree ? treeData.tree.map((t: any) => t.path) : [];
 
     const techIndicators = ["package.json", "requirements.txt", "go.mod", "pom.xml", "Cargo.toml", "build.gradle"];
     let techFileContent = "";
