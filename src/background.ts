@@ -1,5 +1,5 @@
 import { getRepoContext } from './services/github';
-import { generateReadmeWithGemini } from './services/gemini';
+import { generateREADME } from './services/llmRouter';
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'GENERATE_README') {
@@ -19,21 +19,14 @@ async function handleGenerateReadme(url: string) {
         return cached[cacheKey];
     }
 
-    // 2. Get API Key
-    const storage = await chrome.storage.local.get('geminiApiKey');
-    const apiKey = storage.geminiApiKey as string;
-
-    if (!apiKey) {
-        throw new Error("Gemini API key is not configured. Please set it in Options.");
-    }
-
-    // 3. Get GitHub Context
+    // 2. Get GitHub Context
     const context = await getRepoContext(url);
 
-    // 4. Generate README
-    const readmeContent = await generateReadmeWithGemini(apiKey, context);
+    // 3. Generate README via provider-agnostic router
+    //    (Gemini → OpenAI → template fallback — all handled inside generateREADME)
+    const readmeContent = await generateREADME(context);
 
-    // 5. Cache the result
+    // 4. Cache the result
     await chrome.storage.local.set({ [cacheKey]: readmeContent });
 
     return readmeContent;
