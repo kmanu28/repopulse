@@ -1,13 +1,28 @@
 const GITHUB_API = "https://api.github.com";
 
+async function getGitHubHeaders(): Promise<Record<string, string>> {
+    const headers: Record<string, string> = {
+        "Accept": "application/vnd.github+json"
+    };
+    if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
+        const storage = await chrome.storage.local.get('GH_TOKEN');
+        if (storage.GH_TOKEN) {
+            headers["Authorization"] = `token ${storage.GH_TOKEN}`;
+        }
+    }
+    return headers;
+}
+
 export async function fetchRepoTree(owner: string, repo: string, sha: string) {
-    const response = await fetch(`${GITHUB_API}/repos/${owner}/${repo}/git/trees/${sha}?recursive=1`);
+    const headers = await getGitHubHeaders();
+    const response = await fetch(`${GITHUB_API}/repos/${owner}/${repo}/git/trees/${sha}?recursive=1`, { headers });
     if (!response.ok) throw new Error("Failed to fetch repository tree");
     return response.json();
 }
 
 export async function fetchFileContent(owner: string, repo: string, path: string) {
-    const response = await fetch(`${GITHUB_API}/repos/${owner}/${repo}/contents/${path}`);
+    const headers = await getGitHubHeaders();
+    const response = await fetch(`${GITHUB_API}/repos/${owner}/${repo}/contents/${path}`, { headers });
     if (!response.ok) return null;
     const data = await response.json();
     if (data.content) {
@@ -29,10 +44,14 @@ export async function getRepoContext(url: string) {
     const repo = match[2];
 
     // Fetch default branch
-    const repoInfo = await fetch(`${GITHUB_API}/repos/${owner}/${repo}`);
+    const headers = await getGitHubHeaders();
+    const repoInfo = await fetch(`${GITHUB_API}/repos/${owner}/${repo}`, { headers });
     if (!repoInfo.ok) {
-        if (repoInfo.status === 403) throw new Error("GitHub API rate limit exceeded");
-        throw new Error("Repository not found or private");
+        if (repoInfo.status === 401) throw new Error("Invalid GitHub token. Clear your PAT in Options and try again.");
+        if (repoInfo.status === 403) throw new Error("GitHub API rate limit exceeded. Add a GitHub PAT in Options to bypass.");
+        if (repoInfo.status === 404) throw new Error("Repository not found or is private.");
+        if (repoInfo.status === 429) throw new Error("GitHub secondary rate limit hit. Please wait a moment and retry.");
+        throw new Error(`GitHub API error (HTTP ${repoInfo.status}). Check your token or try again later.`);
     }
     const repoData = await repoInfo.json();
     const defaultBranch = repoData.default_branch || "main";
